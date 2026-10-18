@@ -7,9 +7,10 @@ export function getStaticPaths() {
 }
 
 const locale = Astro.params.locale === 'hi' ? 'hi' : 'en';
+const releaseItems = contentData.items as Array<any>;
 const isHindi = locale === 'hi';
 const items = contentData.releaseStatus === 'validated'
-  ? contentData.items.filter((item) => item.status === 'published' && item.locales?.[locale])
+  ? releaseItems.filter((item) => item.status === 'published' && item.locales?.[locale])
   : [];
 const pageTitle = isHindi ? 'ज्ञान संग्रह' : 'Knowledge library';
 const description = isHindi
