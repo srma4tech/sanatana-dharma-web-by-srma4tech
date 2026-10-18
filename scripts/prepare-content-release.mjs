@@ -109,6 +109,11 @@ export function loadAndValidateRelease(releaseRoot) {
          !Array.isArray(source.language) || !source.rights?.status)) {
       fail(`verified source ${source.id} is missing required citation metadata`);
     }
+    if (source.url !== undefined) {
+      let parsedUrl;
+      try { parsedUrl = new URL(source.url); } catch { fail(`source ${source.id} has an invalid URL`); }
+      if (!['https:', 'http:'].includes(parsedUrl.protocol)) fail(`source ${source.id} URL must use HTTP or HTTPS`);
+    }
     sourceMap.set(source.id, source);
   }
 
@@ -133,6 +138,7 @@ export function loadAndValidateRelease(releaseRoot) {
     const digest = crypto.createHash('sha256').update(raw).digest('hex');
     if (digest !== entry.sha256) fail(`SHA-256 mismatch for ${entry.id}`);
     const record = readJson(recordPath);
+    validateRestrictedContent(record);
     if (record.id !== entry.id || record.type !== entry.type || record.status !== 'published') {
       fail(`manifest metadata does not match record ${entry.id}`);
     }
