@@ -39,6 +39,9 @@ function fixture() {
       sha256: crypto.createHash('sha256').update(bytes).digest('hex')
     }]
   };
+  const sourcePath = path.join(root, 'content', 'sources', 'source-1.json');
+  fs.mkdirSync(path.dirname(sourcePath), { recursive: true });
+  fs.writeFileSync(sourcePath, JSON.stringify({ id: 'source-1', verificationStatus: 'verified' }));
   const manifestPath = path.join(root, 'content', 'manifest.json');
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
   fs.writeFileSync(manifestPath, JSON.stringify(manifest));
