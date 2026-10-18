@@ -99,6 +99,19 @@ export function loadAndValidateRelease(releaseRoot) {
     fail('manifest must contain at least one approved content item');
   }
 
+  const sourceRoot = path.join(root, 'content', 'sources');
+  const sourceMap = new Map();
+  for (const sourcePath of collectJsonFiles(sourceRoot)) {
+    const source = readJson(sourcePath);
+    if (typeof source.id !== 'string' || sourceMap.has(source.id)) fail(`invalid or duplicate source ID in ${sourcePath}`);
+    if (source.verificationStatus === 'verified' &&
+        (typeof source.title !== 'string' || !Array.isArray(source.creators) ||
+         !Array.isArray(source.language) || !source.rights?.status)) {
+      fail(`verified source ${source.id} is missing required citation metadata`);
+    }
+    sourceMap.set(source.id, source);
+  }
+
   const ids = new Set();
   const slugs = new Set();
   const items = [];
@@ -137,7 +150,11 @@ export function loadAndValidateRelease(releaseRoot) {
       if (slugs.has(record.slug)) fail(`duplicate slug ${record.slug}`);
       slugs.add(record.slug);
     }
-    items.push(record);
+    const sourceReferences = record.sources.map(reference => ({
+      ...reference,
+      source: sourceMap.get(reference.sourceId)
+    }));
+    items.push({ ...record, sourceReferences });
   }
 
   return {
