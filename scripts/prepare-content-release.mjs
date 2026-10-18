@@ -37,6 +37,40 @@ function safeRepoPath(root, relativePath) {
   return absolute;
 }
 
+function collectJsonFiles(directory) {
+  if (!fs.existsSync(directory)) return [];
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) return collectJsonFiles(fullPath);
+    return entry.isFile() && entry.name.endsWith('.json') ? [fullPath] : [];
+  });
+}
+
+function validateRestrictedContent(record) {
+  if (record.type === 'mantra-or-stotra' && record.mantraDetails?.accessTier === 'initiation-required') {
+    const forbidden = ['mantraText', 'transliteration', 'pronunciation', 'translation', 'meaning', 'recitationInstructions'];
+    for (const key of forbidden) {
+      if (Object.hasOwn(record.mantraDetails, key)) fail(`initiation-required mantra ${record.id} contains forbidden field ${key}`);
+    }
+    for (const [locale, data] of Object.entries(record.locales ?? {})) {
+      for (const [sectionIndex, section] of (data.body ?? []).entries()) {
+        for (const [blockIndex, block] of (section.blocks ?? []).entries()) {
+          if (['quote', 'verse'].includes(block.kind)) {
+            fail(`initiation-required mantra ${record.id} contains a quote/verse block at ${locale}:${sectionIndex}:${blockIndex}`);
+          }
+        }
+      }
+    }
+  }
+  if (['practice-guide', 'puja-procedure'].includes(record.type)) {
+    const details = record.practiceDetails ?? record.pujaDetails;
+    if (details?.accessTier === 'initiation-required' &&
+        (Object.hasOwn(details, 'steps') || Object.hasOwn(details, 'materials'))) {
+      fail(`initiation-required practice ${record.id} exposes steps or materials`);
+    }
+  }
+}
+
 function validateLocale(record, locale) {
   const data = record.locales?.[locale];
   if (!data || !['approved', 'published'].includes(data.localeStatus)) {
