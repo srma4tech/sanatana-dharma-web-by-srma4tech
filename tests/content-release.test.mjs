@@ -45,7 +45,7 @@ function fixture() {
   const manifestPath = path.join(root, 'content', 'manifest.json');
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
   fs.writeFileSync(manifestPath, JSON.stringify(manifest));
-  return { root, recordPath, manifestPath, manifest };
+  return { root, recordPath, sourcePath, manifestPath, manifest };
 }
 
 test('accepts a pinned-manifest item with bilingual approval, publisher approval and matching hash', () => {
@@ -109,4 +109,17 @@ test('rejects empty manifests and unverified sources', () => {
 
 test('production mode fails when no immutable release directory is supplied', () => {
   assert.throws(() => prepareContentRelease({ releaseDir: undefined, required: true }), /SANATANA_CONTENT_DIR is required/);
+});
+
+
+test('rejects source URLs that are not HTTP or HTTPS', () => {
+  const f = fixture();
+  try {
+    const source = JSON.parse(fs.readFileSync(f.sourcePath, 'utf8'));
+    source.url = 'javascript:alert(1)';
+    fs.writeFileSync(f.sourcePath, JSON.stringify(source));
+    assert.throws(() => loadAndValidateRelease(f.root), /URL must use HTTP or HTTPS/);
+  } finally {
+    fs.rmSync(f.root, { recursive: true, force: true });
+  }
 });
