@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { loadAndValidateRelease } from '../scripts/prepare-content-release.mjs';
+import { loadAndValidateRelease, prepareContentRelease } from '../scripts/prepare-content-release.mjs';
 
 function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sanatana-release-'));
@@ -105,4 +105,8 @@ test('rejects empty manifests and unverified sources', () => {
   } finally {
     fs.rmSync(f.root, { recursive: true, force: true });
   }
+});
+
+test('production mode fails when no immutable release directory is supplied', () => {
+  assert.throws(() => prepareContentRelease({ releaseDir: undefined, required: true }), /SANATANA_CONTENT_DIR is required/);
 });
