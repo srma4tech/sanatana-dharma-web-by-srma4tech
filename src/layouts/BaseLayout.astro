@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+interface Props {
+  title: string;
+  description: string;
+  lang?: 'en' | 'hi';
+}
+const { title, description, lang = 'en' } = Astro.props;
+const siteName = 'Sanātana Dharma';
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#10251f" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label={`${siteName} home`}>{siteName}</a>
+      <nav aria-label="Primary navigation">
+        <a href="/#principles">Principles</a>
+        <a href="/#status">Project status</a>
+      </nav>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <p>Built with care. Content will be published only after source and editorial review.</p>
+    </footer>
+  </body>
+</html>

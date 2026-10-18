@@ -1,0 +1,29 @@
+name: Web validation
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Astro and TypeScript checks
+        run: npm run check
+      - name: Build static site
+        run: npm run build
+      - name: Verify built-site contracts
+        run: npm test
