@@ -2,18 +2,21 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import contentData from '../../data/published-content.json';
 
+const releaseItems = contentData.items as Array<any>;
+
 export function getStaticPaths() {
   if (contentData.releaseStatus !== 'validated') return [];
-  return contentData.items.flatMap((item) => {
+  return releaseItems.flatMap((item) => {
     if (item.status !== 'published' || !item.slug) return [];
-    return ['en', 'hi'].filter((locale) => item.locales?.[locale]).map((locale) => ({
+    return (['en', 'hi'] as const).filter((locale) => item.locales?.[locale]).map((locale) => ({
       params: { locale, slug: item.slug },
       props: { item, locale }
     }));
   });
 }
 
-const { item, locale } = Astro.props;
+const { item } = Astro.props;
+const locale = Astro.props.locale === 'hi' ? 'hi' : 'en';
 const localized = item.locales[locale];
 const isHindi = locale === 'hi';
 const title = localized.seoTitle || localized.title;
