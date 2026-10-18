@@ -149,7 +149,7 @@ export function loadAndValidateRelease(releaseRoot) {
     validateLocale(record, 'hi');
     validateLocale(record, 'en');
     if (!Array.isArray(record.sources) || record.sources.length === 0 ||
-        record.sources.some(source => source.verificationStatus !== 'verified' || typeof source.sourceId !== 'string')) {
+        record.sources.some(source => source.verificationStatus !== 'verified' || typeof source.sourceId !== 'string' || !sourceMap.has(source.sourceId))) {
       fail(`record ${entry.id} lacks verified claim-level sources`);
     }
     if (record.slug) {
