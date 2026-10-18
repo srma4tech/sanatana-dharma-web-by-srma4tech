@@ -42,3 +42,29 @@ h2 { max-width: 720px; font-size: clamp(2rem, 4vw, 3.3rem); }
 .site-footer p { max-width: 1160px; margin: 0 auto; }
 @media (max-width: 680px) { .site-header { align-items: flex-start; flex-direction: column; } nav { gap: 0.9rem; } .principle-grid { grid-template-columns: 1fr; } .hero { padding-top: 4rem; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+
+.library-page, .article-page { padding-top: clamp(2.5rem, 6vw, 5rem); padding-bottom: 4rem; }
+.library-intro, .article-summary { max-width: 720px; color: var(--muted); font-size: 1.15rem; }
+.language-switch { display: flex; gap: 0.8rem; margin: 1.5rem 0 2rem; }
+.language-switch a { display: inline-block; padding: 0.4rem 0.8rem; border: 1px solid var(--line); border-radius: 999px; text-underline-offset: 0.2em; }
+.library-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; margin-top: 2rem; }
+.library-card { padding: 1.4rem; border: 1px solid var(--line); border-radius: 0.8rem; background: #fffefa; }
+.library-card h2 { margin: 0.4rem 0 0.8rem; font-size: clamp(1.4rem, 3vw, 2rem); }
+.library-card h2 a { text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.card-type { color: #80501c; font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.empty-state { margin: 2rem 0; padding: clamp(1.5rem, 4vw, 3rem); border: 1px solid var(--line); border-radius: 0.8rem; background: #fffefa; }
+.empty-state h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+.breadcrumbs { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2rem; font-size: 0.92rem; color: var(--muted); }
+.article-header { max-width: 850px; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
+.article-body { max-width: 780px; padding: 1rem 0 2rem; }
+.article-body section { margin: 2.5rem 0; }
+.article-body h2, .source-list h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
+.article-body p, .article-body li, .source-list li { font-size: 1.05rem; }
+.article-body li { margin: 0.5rem 0; }
+.content-callout, .content-note { margin: 1.5rem 0; padding: 1rem 1.2rem; border-left: 3px solid var(--saffron); background: #eeece2; }
+.article-body blockquote { margin: 1.5rem 0; padding: 1rem 1.4rem; border-left: 3px solid #466a58; background: #fffefa; }
+.article-body cite { display: block; margin-top: 0.8rem; color: var(--muted); font-size: 0.9rem; }
+.source-list { max-width: 850px; padding-top: 2rem; border-top: 1px solid var(--line); }
+.source-list li { margin: 1.2rem 0; }
+.source-list li p { margin: 0.4rem 0; color: var(--muted); font-size: 0.95rem; }
+@media (max-width: 680px) { .library-grid { grid-template-columns: 1fr; } }
