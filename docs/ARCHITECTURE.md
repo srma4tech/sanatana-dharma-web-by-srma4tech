@@ -1,54 +1,49 @@
 # Web Application Architecture
 
-**Status:** Proposed foundation for review. No application stack has been installed and no UI has been implemented yet.
+**Status:** The static-first Astro/TypeScript foundation and fail-closed content release bridge are implemented on `master`. The first responsive UI/status-dashboard iteration is being developed on a feature branch for review. Full visual design, browser QA, and deployment are not yet approved or complete.
 
 ## Goals
 
 - Build a free, responsive Hindi-English Sanātana Dharma knowledge and devotion website.
 - Make content readable without sign-in.
 - Prioritize discoverability, accessibility, fast page loads, and a useful mobile experience.
-- Consume only a pinned, validated content release from `srma4tech/sanatana-dharma-content`.
-- Keep content research and approval independent from frontend releases.
+- Consume only a pinned, validated, explicitly approved release from the canonical content repository.
+- Make project status visible so visitors can distinguish completed platform capabilities, work in progress, planned sections, and content that is not yet published.
 
-## Proposed stack
+## Current implementation
 
-- **Astro + TypeScript** for static-first, content-oriented pages and SEO-friendly rendered HTML.
-- Use interactive islands only where interaction provides value; avoid shipping a large client runtime to every page.
-- Use semantic HTML and accessible design tokens/components. Select a styling approach after the first design-system spike.
-- Generate the public site at build time from a pinned content release and its allow-listed manifest.
-- Add PWA/offline capabilities after core routes, metadata, accessibility, and content loading are tested.
-- Use GitHub Actions for linting, type checks, unit/build checks, link checks where practical, and deployment previews.
+- Astro with TypeScript and static-first pages.
+- English and Hindi library routes.
+- Localized article routes generated only from the validated manifest dataset.
+- Release-candidate workflow pins the content repository to an exact commit SHA, validates it before building, and uploads a review artifact without deploying.
+- The foundation build fails closed: no content release means no religious article routes are rendered.
+- The homepage and library UI are being updated to show project progress and learning-area status without implying that planned content is already published.
+- Full UI/UX review, browser-based mobile/desktop checks, and production deployment remain pending.
 
-This is a recommendation to validate in a small spike, not a claim that these dependencies are already configured.
+## Content and trust boundaries
 
-## Content integration contract
+- Canonical content lives in `srma4tech/sanatana-dharma-content`.
+- The web repository consumes an immutable, validated content commit at build time; it must never consume a moving branch or arbitrary draft.
+- The manifest allow-list, record paths, IDs/types/statuses, SHA-256 hashes, locale approvals, publisher approval, and source references are checked before the production build.
+- Inventory topics and work-in-progress sections are navigation/status metadata, not publishable religious claims.
+- Schema validation is necessary but not sufficient; religious, historical, theological, and interpretive claims require evidence and human review.
+- Hindi and English are first-class locales with independent review; both must pass before release.
+- No draft, unverified, restricted, or unapproved content is rendered.
 
-- Never consume the content repository's moving default branch at runtime.
-- Pin an immutable release tag or commit and verify the manifest checksum before build.
-- Fail the build if the release reference, manifest, hashes, or required locales are missing or invalid.
-- Render only manifest-approved published records.
-- Do not create public routes for drafts, blocked records, or content with unresolved source/review states.
-- Preserve source references and uncertainty notices in the UI.
-- Avoid inventing claims, translations, ritual instructions, or relationships in frontend code.
+## Architecture decisions
 
-## SEO and accessibility
+See [ADR 0001 — Static-first web stack](decisions/0001-static-first-web-stack.md).
 
-- Render indexable page content in the initial HTML.
-- Use unique, accurate titles and descriptions per route, canonical URLs when a public domain is chosen, sitemap and robots rules, and localized Hindi/English routes with correct language metadata.
-- Add structured data only where its fields are factual and supported; never use schema markup to imply verification or authority that the sources do not establish.
-- Use keyboard-accessible navigation, visible focus, semantic headings, adequate contrast, reduced-motion support, and meaningful alternative text.
-- Keep performance budgets and mobile testing in CI as the app matures.
+## Release workflow
 
-## Security and privacy
+See [Content release integration runbook](CONTENT-RELEASE-INTEGRATION.md).
 
-- No secrets in source control or browser bundles.
-- No analytics or third-party trackers without an explicit privacy decision.
-- Public reading must not depend on authentication.
-- If accounts or personalization are added later, treat them as a separate approved scope.
+## Validation
 
-## Next implementation gates
+The web repository provides:
+- `npm run check` for Astro/TypeScript checks.
+- `npm test` for content release and built-site contract tests.
+- `npm run build` for the fail-closed foundation build.
+- `npm run build:production` for a build requiring a supplied validated release directory.
 
-1. Approve the content schema/release contract.
-2. Run a minimal Astro/TypeScript build spike and verify output paths for the intended hosting target.
-3. Define localized routing and page templates against real approved content fixtures.
-4. Add automated checks before building the full UI.
+Do not claim a check passed unless it was executed and its result was observed. Do not merge, publish, or deploy from a feature branch without explicit product-owner approval.
