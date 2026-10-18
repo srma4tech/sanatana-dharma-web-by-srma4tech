@@ -8,6 +8,7 @@ interface Props {
 const { title, description, lang = 'en' } = Astro.props;
 const siteName = 'Sanātana Dharma';
 const isHindi = lang === 'hi';
+const isLibraryPage = Astro.url.pathname === '/en/' || Astro.url.pathname === '/hi/';
 ---
 <!doctype html>
 <html lang={lang}>
@@ -29,7 +30,7 @@ const isHindi = lang === 'hi';
       <nav class="primary-nav" aria-label={isHindi ? 'मुख्य नेविगेशन' : 'Primary navigation'}>
         <a href="/#sections">{isHindi ? 'विषय' : 'Explore'}</a>
         <a href="/#progress">{isHindi ? 'प्रगति' : 'Progress'}</a>
-        <a href={isHindi ? '/hi/' : '/en/'} aria-current="page">{isHindi ? 'ज्ञान संग्रह' : 'Library'}</a>
+        <a href={isHindi ? '/hi/' : '/en/'} aria-current={isLibraryPage ? 'page' : undefined}>{isHindi ? 'ज्ञान संग्रह' : 'Library'}</a>
         <span class="nav-divider" aria-hidden="true"></span>
         <a class="nav-language" href={isHindi ? '/en/' : '/hi/'} lang={isHindi ? 'en' : 'hi'}>{isHindi ? 'English' : 'हिन्दी'}</a>
       </nav>
