@@ -25,7 +25,7 @@ const isLibraryPage = Astro.url.pathname === '/en/' || Astro.url.pathname === '/
     <header class="site-header">
       <a class="brand" href="/" aria-label={isHindi ? 'सनातन धर्म मुख्य पृष्ठ' : `${siteName} home`}>
         <span class="brand-mark" aria-hidden="true">ॐ</span>
-        <span class="brand-name">Sanātana Dharma<span class="brand-byline">Knowledge with context</span></span>
+        <span class="brand-name">Sanātana Dharma<span class="brand-byline">{isHindi ? 'संदर्भ सहित ज्ञान' : 'Knowledge with context'}</span></span>
       </a>
       <nav class="primary-nav" aria-label={isHindi ? 'मुख्य नेविगेशन' : 'Primary navigation'}>
         <a href="/#sections">{isHindi ? 'विषय' : 'Explore'}</a>
@@ -42,7 +42,7 @@ const isLibraryPage = Astro.url.pathname === '/en/' || Astro.url.pathname === '/
         <p>{isHindi
           ? 'सामग्री स्रोत-सत्यापन और संपादकीय समीक्षा के बाद ही प्रकाशित होगी।'
           : 'Content is published only after source verification and editorial review.'}</p>
-        <div class="footer-links"><a href="/en/">English library</a><a href="/hi/" lang="hi">हिन्दी संग्रह</a><a href="/#principles">{isHindi ? 'संपादकीय सिद्धांत' : 'Editorial principles'}</a></div>
+        <div class="footer-links"><a href="/en/">{isHindi ? 'अंग्रेज़ी संग्रह' : 'English library'}</a><a href="/hi/" lang="hi">{isHindi ? 'हिन्दी संग्रह' : 'Hindi library'}</a><a href="/#principles">{isHindi ? 'संपादकीय सिद्धांत' : 'Editorial principles'}</a></div>
       </div>
     </footer>
   </body>
