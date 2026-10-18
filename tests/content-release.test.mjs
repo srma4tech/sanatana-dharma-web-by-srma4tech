@@ -17,7 +17,7 @@ function fixture() {
       reviewStatus: 'approved-for-publication',
       publisherApproval: { approved: true }
     },
-    sources: [{ sourceId: 'source-1', verificationStatus: 'verified' }],
+    sources: [{ sourceId: 'source-1', claimClass: 'traditional-belief', locator: 'Chapter 1', verificationStatus: 'verified', claimSummary: 'Test claim', verifiedBy: 'reviewer-1', verifiedOn: '2026-10-18' }],
     locales: {
       hi: { localeStatus: 'approved', review: { languageStatus: 'approved', subjectStatus: 'approved' } },
       en: { localeStatus: 'approved', review: { languageStatus: 'approved', subjectStatus: 'approved' } }
@@ -41,11 +41,11 @@ function fixture() {
   };
   const sourcePath = path.join(root, 'content', 'sources', 'source-1.json');
   fs.mkdirSync(path.dirname(sourcePath), { recursive: true });
-  fs.writeFileSync(sourcePath, JSON.stringify({ id: 'source-1', verificationStatus: 'verified' }));
+  fs.writeFileSync(sourcePath, JSON.stringify({ id: 'source-1', sourceKind: 'institutional-source', title: 'Example source', creators: ['Test author'], language: ['en'], rights: { status: 'not-applicable' }, verificationStatus: 'verified', url: 'https://example.org/source', accessDate: '2026-10-18' }));
   const manifestPath = path.join(root, 'content', 'manifest.json');
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
   fs.writeFileSync(manifestPath, JSON.stringify(manifest));
-  return { root, recordPath, manifestPath, manifest };
+  return { root, recordPath, sourcePath, manifestPath, manifest };
 }
 
 test('accepts a pinned-manifest item with bilingual approval, publisher approval and matching hash', () => {
@@ -109,4 +109,17 @@ test('rejects empty manifests and unverified sources', () => {
 
 test('production mode fails when no immutable release directory is supplied', () => {
   assert.throws(() => prepareContentRelease({ releaseDir: undefined, required: true }), /SANATANA_CONTENT_DIR is required/);
+});
+
+
+test('rejects source URLs that are not HTTP or HTTPS', () => {
+  const f = fixture();
+  try {
+    const source = JSON.parse(fs.readFileSync(f.sourcePath, 'utf8'));
+    source.url = 'javascript:alert(1)';
+    fs.writeFileSync(f.sourcePath, JSON.stringify(source));
+    assert.throws(() => loadAndValidateRelease(f.root), /URL must use HTTP or HTTPS/);
+  } finally {
+    fs.rmSync(f.root, { recursive: true, force: true });
+  }
 });

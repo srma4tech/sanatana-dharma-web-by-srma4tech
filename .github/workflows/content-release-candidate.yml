@@ -1,0 +1,74 @@
+name: Content release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      content_commit_sha:
+        description: "Exact 40-character commit SHA from srma4tech/sanatana-dharma-content"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-release-candidate-${{ inputs.content_commit_sha }}
+  cancel-in-progress: false
+
+jobs:
+  build-release-candidate:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Validate immutable content commit input
+        env:
+          CONTENT_SHA: ${{ inputs.content_commit_sha }}
+        run: |
+          if [[ ! "$CONTENT_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::Provide an exact 40-character lowercase commit SHA."
+            exit 1
+          fi
+
+      - name: Checkout web repository
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+
+      - name: Checkout pinned private content commit
+        uses: actions/checkout@v4
+        with:
+          repository: srma4tech/sanatana-dharma-content
+          ref: ${{ inputs.content_commit_sha }}
+          token: ${{ secrets.CONTENT_REPO_READ_TOKEN }}
+          path: content-release
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate content release
+        working-directory: content-release
+        run: |
+          npm install
+          npm run validate:release
+
+      - name: Install web dependencies
+        run: npm install
+
+      - name: Build release candidate
+        env:
+          SANATANA_CONTENT_DIR: ${{ github.workspace }}/content-release
+        run: npm run build:production
+
+      - name: Upload static release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanatana-static-candidate-${{ inputs.content_commit_sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7

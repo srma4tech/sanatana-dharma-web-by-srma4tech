@@ -99,6 +99,24 @@ export function loadAndValidateRelease(releaseRoot) {
     fail('manifest must contain at least one approved content item');
   }
 
+  const sourceRoot = path.join(root, 'content', 'sources');
+  const sourceMap = new Map();
+  for (const sourcePath of collectJsonFiles(sourceRoot)) {
+    const source = readJson(sourcePath);
+    if (typeof source.id !== 'string' || sourceMap.has(source.id)) fail(`invalid or duplicate source ID in ${sourcePath}`);
+    if (source.verificationStatus === 'verified' &&
+        (typeof source.title !== 'string' || !Array.isArray(source.creators) ||
+         !Array.isArray(source.language) || !source.rights?.status)) {
+      fail(`verified source ${source.id} is missing required citation metadata`);
+    }
+    if (source.url !== undefined) {
+      let parsedUrl;
+      try { parsedUrl = new URL(source.url); } catch { fail(`source ${source.id} has an invalid URL`); }
+      if (!['https:', 'http:'].includes(parsedUrl.protocol)) fail(`source ${source.id} URL must use HTTP or HTTPS`);
+    }
+    sourceMap.set(source.id, source);
+  }
+
   const ids = new Set();
   const slugs = new Set();
   const items = [];
@@ -120,6 +138,7 @@ export function loadAndValidateRelease(releaseRoot) {
     const digest = crypto.createHash('sha256').update(raw).digest('hex');
     if (digest !== entry.sha256) fail(`SHA-256 mismatch for ${entry.id}`);
     const record = readJson(recordPath);
+    validateRestrictedContent(record);
     if (record.id !== entry.id || record.type !== entry.type || record.status !== 'published') {
       fail(`manifest metadata does not match record ${entry.id}`);
     }
@@ -130,14 +149,18 @@ export function loadAndValidateRelease(releaseRoot) {
     validateLocale(record, 'hi');
     validateLocale(record, 'en');
     if (!Array.isArray(record.sources) || record.sources.length === 0 ||
-        record.sources.some(source => source.verificationStatus !== 'verified' || typeof source.sourceId !== 'string')) {
+        record.sources.some(source => source.verificationStatus !== 'verified' || typeof source.sourceId !== 'string' || !sourceMap.has(source.sourceId) || sourceMap.get(source.sourceId)?.verificationStatus !== 'verified')) {
       fail(`record ${entry.id} lacks verified claim-level sources`);
     }
     if (record.slug) {
       if (slugs.has(record.slug)) fail(`duplicate slug ${record.slug}`);
       slugs.add(record.slug);
     }
-    items.push(record);
+    const sourceReferences = record.sources.map(reference => ({
+      ...reference,
+      source: sourceMap.get(reference.sourceId)
+    }));
+    items.push({ ...record, sourceReferences });
   }
 
   return {

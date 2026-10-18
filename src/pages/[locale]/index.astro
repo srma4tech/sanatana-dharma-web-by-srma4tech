@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import contentData from '../../data/published-content.json';
+
+export function getStaticPaths() {
+  return ['en', 'hi'].map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale === 'hi' ? 'hi' : 'en';
+const releaseItems = contentData.items as Array<any>;
+const isHindi = locale === 'hi';
+const items = contentData.releaseStatus === 'validated'
+  ? releaseItems.filter((item) => item.status === 'published' && item.locales?.[locale])
+  : [];
+const pageTitle = isHindi ? 'ज्ञान संग्रह' : 'Knowledge library';
+const description = isHindi
+  ? 'स्रोत-सत्यापित और संपादकीय समीक्षा से स्वीकृत सनातन धर्म सामग्री।'
+  : 'Source-verified and editorially approved Sanātana Dharma resources.';
+---
+<BaseLayout title={`${pageTitle} — Sanātana Dharma`} description={description} lang={locale}>
+  <main id="main" class="library-page">
+    <p class="eyebrow">{isHindi ? 'समीक्षित सामग्री' : 'Reviewed resources'}</p>
+    <h1>{pageTitle}</h1>
+    <p class="library-intro">{isHindi
+      ? 'यहाँ केवल प्रकाशित सूची में स्वीकृत और दोनों भाषाओं में समीक्षा की गई सामग्री दिखाई जाएगी।'
+      : 'Only manifest-approved content reviewed in both languages appears here.'}</p>
+    <nav class="language-switch" aria-label={isHindi ? 'भाषा चुनें' : 'Choose language'}>
+      <a href="/en/" lang="en">English</a>
+      <a href="/hi/" lang="hi">हिन्दी</a>
+    </nav>
+    {items.length > 0 ? (
+      <div class="library-grid">
+        {items.map((item) => {
+          const localized = item.locales[locale];
+          return <article class="library-card">
+            <p class="card-type">{item.type.replaceAll('-', ' ')}</p>
+            <h2><a href={`/${locale}/${item.slug}/`}>{localized.title}</a></h2>
+            <p>{localized.summary}</p>
+          </article>;
+        })}
+      </div>
+    ) : (
+      <section class="empty-state" aria-live="polite">
+        <h2>{isHindi ? 'समीक्षित सामग्री शीघ्र उपलब्ध होगी' : 'Reviewed content is being prepared'}</h2>
+        <p>{isHindi
+          ? 'कोई सामग्री प्रकाशित नहीं है। स्रोत और संपादकीय समीक्षा पूरी होने पर ही लेख यहाँ आएँगे।'
+          : 'Nothing is published yet. Articles will appear after source verification and editorial approval.'}</p>
+      </section>
+    )}
+  </main>
+</BaseLayout>
