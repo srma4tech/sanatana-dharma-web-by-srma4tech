@@ -58,7 +58,7 @@ The UI must distinguish platform readiness from content readiness.
 - **Planned:** the section is in the future backlog and has not entered active content research.
 - **Not published:** no approved article is available to readers yet.
 
-For every learning-area card, show a status and explicitly avoid implying that content is available until the validated release provides it. The current UI may show Deities & Forms and Scriptures & Texts as **In progress** at the section-design level; other areas remain **Planned** until work begins.
+For every learning-area card, show a status and explicitly avoid implying that content is available until the validated release provides it. The current UI may show all seven learning-area cards as **In progress** at the section-design level while articles remain unpublished. The canonical content inventory continues to distinguish the actual research state of each topic.
 
 ## 4. Content-to-web delivery contract
 
