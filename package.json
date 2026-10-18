@@ -7,9 +7,10 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
-    "build": "astro build",
+    "build": "node scripts/prepare-content-release.mjs && astro build",
     "preview": "astro preview",
-    "test": "node --test"
+    "test": "node --test",
+    "build:production": "node scripts/prepare-content-release.mjs --required && astro build"
   },
   "dependencies": {
     "astro": "^5.14.1"

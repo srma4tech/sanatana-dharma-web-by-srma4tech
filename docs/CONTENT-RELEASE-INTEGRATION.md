@@ -1,22 +1,26 @@
 # Content Release Integration
 
-**Status:** Contract proposal for the web spike; no content loader is wired yet.
+**Status:** Build-time release bridge implemented; no real content release is configured yet.
 
-## Non-negotiable rules
+## Source of truth and immutable pin
 
-- `srma4tech/sanatana-dharma-content` is canonical for content, sources, taxonomies, schemas, and publication manifests.
-- The web build must consume an immutable release tag or commit, never the moving `master` branch.
-- Only records explicitly allow-listed in a validated manifest with `status: published` may become public routes.
-- Verify every record's SHA-256 against the manifest before parsing/rendering it.
-- Require both `hi` and `en`, plus the source and editorial gates defined by the content repository's validator.
-- Missing refs, mismatched hashes, missing locales, unapproved publisher metadata, or invalid manifests must fail the production build closed.
-- No draft inventory item is content. Do not synthesize articles or fill missing evidence in frontend code.
-- Keep initiation-restricted mantra and ritual limitations intact in both routing and rendering.
+- `srma4tech/sanatana-dharma-content` remains canonical.
+- A production release must be checked out at an exact immutable commit SHA or reviewed release tag. Never read the moving `master` branch.
+- Run the content repository's `npm run validate:release` successfully before the web build.
+- The web release preparer independently checks the manifest, publisher approval, allow-listed entity paths, record IDs/types/statuses, SHA-256 hashes, Hindi and English approval states, editorial approval, and verified claim-level source references.
+- Only records listed in `content/manifest.json` are included in `src/data/published-content.json`. Inventory items and unlisted entity files are never treated as publishable content.
 
-## Private repository delivery decision
+## Build modes
 
-The content repository is currently private while this web repository is public. Do not embed a GitHub token in browser code or commit it to the repository. Before implementing the release downloader, choose and document a server-side build-time delivery mechanism (for example, a narrowly scoped GitHub Actions secret that can read only the content release, or a reviewed public release artifact). The build must pin an exact immutable release identifier and verify the manifest and file hashes.
+- `npm run build` is the foundation/preview build. If `SANATANA_CONTENT_DIR` is not set, it writes an explicit `not-configured` dataset with zero records.
+- `npm run build:production` requires `SANATANA_CONTENT_DIR` and fails closed if the release is missing, empty, or invalid.
+- Do not deploy the foundation build as a production content release. A production workflow must provide the pinned checkout and run the content repository's release validator before the web build.
+- Content release files are build inputs only; private repository credentials must never enter browser code or generated assets.
 
-## Spike boundary
+## Private repository delivery
 
-This PR intentionally does not fetch or render content. It validates that Astro + TypeScript can host a responsive static shell. Content routes, release download, hash verification, localization routing, and PWA behavior remain gated on a reviewed release artifact and automated tests.
+The content repository is private and the web repository is public. A production workflow must use a narrowly scoped GitHub Actions secret with read-only access to the content repository, check out an exact SHA, run its validator, and only then build the public artifact. Do not commit a token, put it in `PUBLIC_*` variables, or expose it client-side. No secret or deployment workflow is configured in this PR because no approved non-empty content release exists yet.
+
+## Current publication status
+
+No religious article or record is currently approved for the website. Passing technical tests verifies the release gate implementation, not factual or religious accuracy. Human review and explicit product-owner approval remain mandatory.
