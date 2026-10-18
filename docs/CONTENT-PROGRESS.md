@@ -22,9 +22,9 @@
 
 ### In progress
 
-- [ ] Homepage status dashboard: distinguish completed platform capabilities, active UI work, and content that is not yet publishable.
-- [ ] Responsive learning-area cards with honest section statuses and bilingual library guidance.
-- [ ] UI copy and navigation review for English and Hindi.
+- [x] Homepage status dashboard implemented in PR #6; awaiting checks and review.
+- [x] Responsive learning-area cards and bilingual library guidance implemented in PR #6; awaiting checks and review.
+- [x] First-pass English and Hindi status copy/navigation implemented in PR #6; final review pending.
 - [ ] Browser-based mobile, tablet, desktop, keyboard, and accessibility review.
 
 ### Pending / blocked
@@ -136,4 +136,4 @@ For every learning-area card, show a status and explicitly avoid implying that c
 | Date | Change | Evidence |
 |---|---|---|
 | 2026-10-18 | Website-side content delivery tracker created after merging the pinned bilingual content-release workflow. | Web repository `master` snapshot |
-| 2026-10-18 | First status-dashboard UI iteration prepared to distinguish completed platform capabilities, active section work, planned topics, and unpublished content. | Feature branch `feat/ui-progress-status-dashboard` |
+| 2026-10-18 | First status-dashboard UI iteration implemented in PR #6; status cards distinguish completed platform work, active section layout, planned areas, and unpublished content. | [PR #6](https://github.com/srma4tech/sanatana-dharma-web-by-srma4tech/pull/6) |
