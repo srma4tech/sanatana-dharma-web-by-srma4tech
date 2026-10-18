@@ -1,0 +1,21 @@
+{
+  "name": "sanatana-dharma-web-by-srma4tech",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Static-first bilingual Sanātana Dharma knowledge and devotion website.",
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "astro": "^5.14.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.9.3"
+  }
+}
