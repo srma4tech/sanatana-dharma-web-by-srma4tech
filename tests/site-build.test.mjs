@@ -29,5 +29,5 @@ test('build does not publish content routes before a validated content release e
   const files = await walk(distDir);
   const htmlRoutes = files.filter((path) => path.endsWith('.html')).sort();
   assert.deepEqual(htmlRoutes, ['en/index.html', 'hi/index.html', 'index.html']);
-  assert.equal(htmlRoutes.some((path) => /\\/(?:en|hi)\\/[^/]+\\/index\\.html$/.test(path)), false);
+  assert.equal(htmlRoutes.some((route) => /^(?:en|hi)\/[^/]+\/index\.html$/.test(route)), false);
 });
